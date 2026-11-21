@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simplex Linear Programming Solver</title>
+<meta name="description" content="Interactive simplex method calculator with step-by-step tableaus, pivots, and detailed results.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#/home"><span class="logo">Σ</span>Simplex Solver</a>
+    <nav class="links" id="links" aria-label="Main">
+      <a href="#/home" data-route="home">Home</a>
+      <a href="#/solver" data-route="solver">Solver</a>
+      <a href="#/team" data-route="team">About Team</a>
+      <a href="#/reviewer" data-route="reviewer">Reviewer</a>
+    </nav>
+    <div class="tools">
+      <button class="icon-btn" id="theme" aria-label="Toggle dark mode" title="Toggle theme">🌙</button>
+      <button class="icon-btn burger" id="burger" aria-label="Menu" aria-expanded="false">☰</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- HOME -->
+<div id="page-home" class="page" hidden>
+  <section class="hero">
+    <div class="wrap grid">
+      <div>
+        <span class="pill">⚡ Quantitative Methods · Group 4</span>
+        <h1>Linear Programming <span class="grad">Simplex Method</span> Solver</h1>
+        <p class="lead">Optimize your linear programming problems with our interactive simplex method calculator.</p>
+        <div class="hero-cta">
+          <a class="btn primary" href="#/solver">Get Started →</a>
+          <a class="btn ghost" href="#/reviewer">Study Modules</a>
+        </div>
+      </div>
+      <div class="preview" aria-hidden="true">
+        <div class="dots"><i></i><i></i><i></i></div>
+        <table>
+          <thead><tr><th>Basis</th><th>x₁</th><th>x₂</th><th>s₁</th><th>s₂</th><th>RHS</th></tr></thead>
+          <tbody>
+            <tr><th>s₁</th><td>1</td><td>0</td><td>1</td><td>0</td><td>4</td></tr>
+            <tr><th>s₂</th><td>0</td><td class="pv">2</td><td>0</td><td>1</td><td>12</td></tr>
+            <tr><th>Z</th><td>−3</td><td>−5</td><td>0</td><td>0</td><td>0</td></tr>
+          </tbody>
+        </table>
+        <div class="cap"><span>Entering: x₂</span><span>Leaving: s₂</span><span>Pivot = 2</span></div>
+      </div>
+    </div>
+  </section>
+  <section class="block" style="padding-top:20px">
+    <div class="wrap">
+      <h2 class="sec-title">Everything you need to learn the method</h2>
+      <p class="sec-sub">Built to show every move, not just the answer.</p>
+      <div class="cards">
+        <div class="card hover"><div class="feat-ico">📊</div><h3>Interactive Tables</h3><p>View detailed simplex tables with pivot elements, entering/exiting variables, and ratios.</p></div>
+        <div class="card hover"><div class="feat-ico">🔄</div><h3>Step-by-Step Solution</h3><p>See each iteration of the simplex method with clear explanations and calculations.</p></div>
+        <div class="card hover"><div class="feat-ico">✅</div><h3>Auto Non-Negativity</h3><p>Automatically generates non-negativity constraints for all variables.</p></div>
+        <div class="card hover"><div class="feat-ico">🎯</div><h3>Detailed Results</h3><p>Get complete solution with optimal value and variable assignments.</p></div>
+      </div>
+      <div class="cta-band" style="margin-top:40px">
+        <div><h2>Ready to solve your LP model?</h2><p style="opacity:.9">Enter an objective and constraints. We'll handle the tableau.</p></div>
+        <a class="btn" href="#/solver">Open the Solver →</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- SOLVER -->
+<div id="page-solver" class="page" hidden>
+  <div class="wrap">
+    <div class="page-head">
+      <h1 style="font-size:clamp(1.8rem,4vw,2.5rem)">Simplex Method Calculator</h1>
+      <p class="sec-sub">Enter your LP model below. Supports Maximize / Minimize with ≤, ≥ and = constraints (Big&nbsp;M handled automatically).</p>
+    </div>
+    <div class="panel">
+      <div class="field" style="display:flex;gap:18px;flex-wrap:wrap;align-items:end;justify-content:space-between">
+        <div>
+          <span class="label" id="otl">Objective Type *</span>
+          <div class="seg" role="radiogroup" aria-labelledby="otl">
+            <input type="radio" name="otype" id="o-max" value="max" checked><label for="o-max">Maximize</label>
+            <input type="radio" name="otype" id="o-min" value="min"><label for="o-min">Minimize</label>
+          </div>
+        </div>
+        <div>
+          <label class="label" for="example">Load an example</label>
+          <select class="in" id="example" style="font-family:inherit;min-width:230px">
+            <option value="">Select an example…</option>
+            <optgroup label="Standard (≤ constraints)">
+              <option value="cls">Maximize · 120x + 100y</option>
+              <option value="max">Maximize · 3x1 + 5x2</option>
+            </optgroup>
+            <optgroup label="Big M (≥ and = constraints)">
+              <option value="min">Minimize · 2x1 + 3x2</option>
+              <option value="mix">Maximize · 2x1 + 3x2 + x3</option>
+            </optgroup>
+            <optgroup label="Special cases">
+              <option value="unb">Unbounded problem</option>
+              <option value="inf">Infeasible problem</option>
+            </optgroup>
+          </select>
+          <p class="hint" id="exNote" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="obj">Objective Function</label>
+        <div class="zrow-in"><span class="zlab" id="zlab">Z =</span><input class="in" id="obj" placeholder="e.g. 3x1 + 5x2" autocomplete="off" spellcheck="false"></div>
+        <p class="hint">Use variable names like x1, x2, x3 (or x, y, z). Coefficients are optional (x1 means 1·x1).</p>
+      </div>
+
+      <div class="field">
+        <span class="label">Constraints</span>
+        <div id="cons"></div>
+        <button class="btn ghost sm" id="addc" type="button">＋ Add Constraint</button>
+        <div class="chips" id="nonneg" aria-live="polite"></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" id="solve" type="button">Solve LP Model</button>
+        <button class="btn ghost" id="reset" type="button">Reset</button>
+      </div>
+      <div class="alert" id="err" role="alert" hidden></div>
+    </div>
+
+    <div id="results" hidden>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <h2 class="sec-title">Solution Steps</h2>
+        <div class="mini-toggle" role="group" aria-label="Number format">
+          <button type="button" id="f-frac" class="on">Fractions</button>
+          <button type="button" id="f-dec">Decimals</button>
+        </div>
+      </div>
+      <div id="out" style="margin-top:18px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TEAM -->
+<div id="page-team" class="page" hidden>
+  <div class="wrap">
+    <div class="page-head">
+      <h1 style="font-size:clamp(1.8rem,4vw,2.5rem)">About Our Team</h1>
+      <p class="sec-sub">Meet the team behind our Simplex Solver Project.</p>
+    </div>
+    <div class="team" id="teamGrid"></div>
+
+    <section class="block" style="padding-bottom:20px">
+      <h2 class="sec-title">Our Teacher</h2>
+      <div class="card" style="margin-top:20px">
+        <div class="teacher">
+          <div class="avatar" id="profAvatar"></div>
+          <div>
+            <h3 style="font-size:1.35rem">PTL. Norcelito Galvan</h3>
+            <span class="role">📘 Subject: Quantitative Methods</span>
+            <blockquote>“Great teaching is not about delivering answers, but inspiring students to ask deeper questions.”</blockquote>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" style="padding-top:20px">
+      <h2 class="sec-title">Project Information</h2>
+      <div class="info3">
+        <div class="card hover"><div class="feat-ico">🎯</div><h3>Objective</h3><p>To build an educational tool showing each step of the Simplex method with clarity.</p></div>
+        <div class="card hover"><div class="feat-ico">🛠️</div><h3>Technologies</h3><p>HTML, CSS, JavaScript (Pure Vanilla) — no frameworks for transparency and simplicity.</p></div>
+        <div class="card hover"><div class="feat-ico">✨</div><h3>Features</h3><p>Auto tableau generation, pivot selection, iterative solving, constraints validation, and solution display.</p></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- REVIEWER -->
+<div id="page-reviewer" class="page" hidden>
+  <div class="wrap">
+    <div class="page-head">
+      <h1 style="font-size:clamp(1.8rem,4vw,2.5rem)">Simplex Methods Reviewer &amp; Downloads</h1>
+      <p class="sec-sub">Study the method, download the modules, and share your feedback.</p>
+    </div>
+
+    <div class="card">
+      <h3>Step-by-Step Simplex Method</h3>
+      <ol class="timeline">
+        <li>Convert the LP problem to standard form</li>
+        <li>Identify pivot column (most negative in Z row)</li>
+        <li>Identify pivot row (smallest positive ratio)</li>
+        <li>Perform pivotal elimination and iterate</li>
+        <li>Check for optimality or repeat steps</li>
+      </ol>
+    </div>
+
+    <section class="block" style="padding-bottom:10px">
+      <h2 class="sec-title">Modules Download</h2>
+      <div class="modules" id="modulesGrid"></div>
+    </section>
+
+    <section class="block" style="padding-top:20px">
+      <h2 class="sec-title">Reviewer Feedback</h2>
+      <p class="sec-sub">Share your feedback and suggestions.</p>
+      <div class="two">
+        <form class="panel" id="fbForm" novalidate>
+          <h3 style="margin-bottom:16px">Submit Your Feedback</h3>
+          <div class="field"><label class="label" for="fbName">Your Name</label><input class="in" id="fbName" maxlength="60" style="font-family:inherit" placeholder="Juan Dela Cruz"></div>
+          <div class="field"><span class="label">Rating</span><div class="stars" id="stars" role="radiogroup" aria-label="Rating"></div><p class="hint" id="starTxt">Select a rating</p></div>
+          <div class="field"><label class="label" for="fbText">Your Feedback</label><textarea class="in" id="fbText" maxlength="500" placeholder="What did you like? What can we improve?"></textarea></div>
+          <button class="btn primary" type="submit">Submit Feedback</button>
+          <div class="alert" id="fbErr" hidden></div>
+        </form>
+        <div class="panel">
+          <h3 style="margin-bottom:6px">User Feedback</h3>
+          <div id="fbList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" style="padding-top:0">
+      <div class="card">
+        <div class="teacher">
+          <div class="avatar" id="profAvatar2"></div>
+          <div>
+            <h3>Our Teacher · PTL. Norcelito Galvan</h3>
+            <span class="role">Subject: Quantitative Methods</span>
+            <blockquote>“Mathematics is not about numbers, equations, or algorithms—it's about understanding.”</blockquote>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+</main>
+
+<footer><div class="wrap">© 2026 Quantitative Methods Group 3. All rights reserved.</div></footer>
+
+<script src="script.js"></script>
+</body>
+</html>
